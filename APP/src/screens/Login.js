@@ -47,16 +47,25 @@ const Login = (props) => {
     );
   }
 
-  // Lưu tài khoản (email và password) vào AsyncStorage
-  const saveAccount = async (email, password) => {
-    const key = email; // Không loại bỏ bất kỳ ký tự nào trong email
-    try {
-      await AsyncStorage.setItem(key, password);
-      console.log(`Tài khoản với email ${email} đã được lưu vào AsyncStorage`);
-    } catch (error) {
-      console.log('Lỗi khi lưu tài khoản vào AsyncStorage:', error);
+// Lưu tài khoản (email và password) vào AsyncStorage
+const saveAccount = async (email, password) => {
+  const key = email; // Không loại bỏ bất kỳ ký tự nào trong email
+  try {
+    const existingPassword = await AsyncStorage.getItem(key);
+    if (existingPassword !== null) {
+      if (existingPassword === password) {
+        console.log(`Tài khoản với email ${email} đã tồn tại`);
+        return;
+      } else {
+        console.log(`Cập nhật tài khoản với email ${email}`);
+      }
     }
-  };
+    await AsyncStorage.setItem(key, password);
+    console.log(`Tài khoản ${email} đã được lưu vào AsyncStorage`);
+  } catch (error) {
+    console.log('Lỗi khi lưu tài khoản vào AsyncStorage:', error);
+  }
+};
 
 
   // Lấy mật khẩu của tài khoản từ AsyncStorage
@@ -108,15 +117,20 @@ const Login = (props) => {
 
         if (res.result == true) {
           // luu mk 
-          if (rememberPassword) {
-            saveAccount(email, password);
-            getSavedAccounts();
+          try {
+            if (rememberPassword) {
+              saveAccount(email, password);
+              getSavedAccounts();
+            }
+          } catch (error) {
+            console.log(error);
+            setisLoading(true);
+            setisLoading(false);
           }
           // luu token va qua trang home
           setinfoUser(res.user);
           setisLoading(false);
           setIsLogin(true);
-          await AsyncStorage.setItem("token", res.token);
 
         } else {
           showAlert("Tài khoản hoặc mật khẩu không chính xác")
@@ -124,9 +138,7 @@ const Login = (props) => {
           setisLoading(false);
         }
       } catch {
-        showAlert("Tài khoản hoặc mật khẩu không chính xác")
-        setisLoading(true);
-        setisLoading(false);
+
       }
     }
   }

@@ -1,7 +1,7 @@
 import { FlatList, Image, StyleSheet, Text, Touchable, TouchableOpacity, View ,StatusBar} from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react';
-
+import Setting from './Setting';
 const data =
     [
         {
@@ -35,16 +35,19 @@ const data =
     ]
 const PAGE1 = 'PAGE1';
 const PAGE2 = 'PAGE2';
-
-const Notifications = () => {
+ 
+const Notifications = (props) => {
     const [page, setPage] = useState(PAGE1);
-
+    const { navigation } = props;
+    const onSetting =()=>{
+        navigation.navigate('Setting')
+    }
     return (
         <View style={{backgroundColor:'white',marginTop:46}}>
             <StatusBar barStyle="dark-content" hidden={false} backgroundColor='white' translucent={true} />
             <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', padding: 10,backgroundColor:'white' }}>
                 <Text style={{ fontSize: 25, color: '#000000', fontWeight: '700', textAlign: 'center', }}>Notifications</Text>
-                <TouchableOpacity style={{ position: 'absolute', end: 0, margin: 10 }}>
+                <TouchableOpacity onPress={()=>onSetting()} style={{ position: 'absolute', end: 10, margin: 20 }}>
                     <Image style={{ width: 30, height: 30, }} source={require('../assets/image/setting.png')} />
                 </TouchableOpacity>
             </View>

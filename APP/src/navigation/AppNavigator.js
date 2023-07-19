@@ -17,6 +17,7 @@ import ForgetPass from '../screens/ForgetPass';
 import OTPValidate from '../screens/OTPValidate';
 import Privacy from '../screens/Privacy';
 import ChangeProfile from '../screens/ChangeProfile';
+import Setting from '../screens/Setting';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -45,6 +46,7 @@ const Mains = () => {
       <Stack.Screen name="Privacy" component={Privacy} />
       <Stack.Screen name="ChangeProfile" component={ChangeProfile} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Setting" component={Setting} />
     </Stack.Navigator>
 
   )
