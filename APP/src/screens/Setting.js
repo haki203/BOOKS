@@ -95,7 +95,14 @@ const Setting = (props) => {
             </View>
             <View style={{ alignItems: 'center' }}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: textColor }}>Phông chữ</Text>
+                    {
+                        isDarkMode ?
+                        <
+                    }
                 <TextInput style={{width:50,height:40, color:textColor}} keyboardType="numeric" defaultValue={fontSize} />
+                <TouchableOpacity>
+
+                </TouchableOpacity>
             </View>
         </View>
     );
