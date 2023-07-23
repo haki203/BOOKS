@@ -48,19 +48,21 @@ const Login = (props) => {
   }
 
 // Lưu tài khoản (email và password) vào AsyncStorage
+const SAVE_ACCOUNT_KEY = "save-account";
 const saveAccount = async (email, password) => {
-  const key = email; // Không loại bỏ bất kỳ ký tự nào trong email
   try {
-    const existingPassword = await AsyncStorage.getItem(key);
-    if (existingPassword !== null) {
-      if (existingPassword === password) {
-        console.log(`Tài khoản với email ${email} đã tồn tại`);
-        return;
-      } else {
-        console.log(`Cập nhật tài khoản với email ${email}`);
-      }
+    const existingAccountsJson = await AsyncStorage.getItem(SAVE_ACCOUNT_KEY);
+    const accounts = existingAccountsJson != null ? JSON.parse(existingAccountsJson) : {};
+    
+    if (accounts[email] && accounts[email] === password) {
+      console.log(`Tài khoản với email ${email} đã tồn tại`);
+      return;
+    } else {
+      console.log(`Cập nhật tài khoản với email ${email}`);
     }
-    await AsyncStorage.setItem(key, password);
+    
+    accounts[email] = password;
+    await AsyncStorage.setItem(SAVE_ACCOUNT_KEY, JSON.stringify(accounts));
     console.log(`Tài khoản ${email} đã được lưu vào AsyncStorage`);
   } catch (error) {
     console.log('Lỗi khi lưu tài khoản vào AsyncStorage:', error);
@@ -68,30 +70,57 @@ const saveAccount = async (email, password) => {
 };
 
 
-  // Lấy mật khẩu của tài khoản từ AsyncStorage
-  const getSavedAccounts = async () => {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const accounts = await AsyncStorage.multiGet(keys);
-      console.log(accounts);
-      setSavedAccounts(accounts);
-    } catch (error) {
-      console.log('Lỗi khi lấy danh sách tài khoản từ AsyncStorage:', error);
+
+// Lấy mật khẩu của tài khoản từ AsyncStorage
+const getSavedAccounts = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const accounts = await AsyncStorage.multiGet(keys);
+
+    // Tìm giá trị tương ứng với khóa "save-account"
+    const saveAccountItem = accounts.find(item => item[0] === 'save-account');
+
+    if (saveAccountItem) {
+      // Nếu tìm thấy giá trị "save-account", phân tích chuỗi JSON để lấy ra đối tượng tài khoản
+      const saveAccountValue = saveAccountItem[1];
+      const parsedAccounts = JSON.parse(saveAccountValue);
+
+      // Tiến hành làm việc với đối tượng tài khoản (parsedAccounts) ở đây
+      console.log(parsedAccounts);
+      setSavedAccounts(parsedAccounts);
+    } else {
+      console.log('Không tìm thấy giá trị "save-account" trong AsyncStorage');
     }
-  };
+  } catch (error) {
+    console.log('Lỗi khi lấy danh sách tài khoản từ AsyncStorage:', error);
+  }
+};
+
   useEffect(() => {
     getSavedAccounts();
   }, []);
 
   // Hàm gợi ý tài khoản dựa trên email đang nhập
   const filterSavedAccounts = (inputText) => {
-    if (inputText.length > 0) {
-      const filteredAccounts = savedAccounts.filter(([email]) => {
-        return email.includes(inputText);
-      });
-      setFilteredAccounts(filteredAccounts);
+    try {
+      if (inputText.length > 0) {
+        // Chuyển đổi đối tượng savedAccounts thành mảng các mảng con chứa các cặp khóa-giá trị
+        const savedAccountsArray = Object.entries(savedAccounts);
+        const filteredAccounts = savedAccountsArray.filter(([email, password]) => {
+          return email.includes(inputText);
+        });
+        setFilteredAccounts(filteredAccounts);
+      }
+      else{
+        setFilteredAccounts([])
+        return [];
+
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+  
 
   // Gọi hàm filterSavedAccounts khi thay đổi nội dung của TextInput
   const handleChangeText = (text) => {
