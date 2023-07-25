@@ -167,7 +167,7 @@ const getSavedAccounts = async () => {
           setisLoading(false);
         }
       } catch {
-
+        showAlert("Có vẻ như server đã bị sập hoặc chưa được bật,vui lòng liên hệ nhà phát triển");
       }
     }
   }

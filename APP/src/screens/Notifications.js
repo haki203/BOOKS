@@ -45,12 +45,14 @@ const Notifications = (props) => {
     return (
         <View style={{backgroundColor:'white',marginTop:46}}>
             <StatusBar barStyle="dark-content" hidden={false} backgroundColor='white' translucent={true} />
-            <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', padding: 10,backgroundColor:'white' }}>
+            <Text style={{ fontSize: 25, color: '#000000', fontWeight: '700', textAlign: 'center', }}>Notifications</Text>
+
+            {/* <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row', padding: 10,backgroundColor:'white' }}>
                 <Text style={{ fontSize: 25, color: '#000000', fontWeight: '700', textAlign: 'center', }}>Notifications</Text>
                 <TouchableOpacity onPress={()=>onSetting()} style={{ position: 'absolute', end: 10, margin: 20 }}>
                     <Image style={{ width: 30, height: 30, }} source={require('../assets/image/setting.png')} />
                 </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={{ flexDirection: 'row',backgroundColor:'white' }}>
 
                 <FlatList

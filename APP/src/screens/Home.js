@@ -76,11 +76,11 @@ const Home = (props) => {
                     </Text>
                     <Image style={{ marginLeft: 10 }} source={require('../assets/image/hello.png')} />
                 </View>
-                <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row',  backgroundColor: 'white' }}>
+                {/* <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row',  backgroundColor: 'white' }}>
                     <TouchableOpacity onPress={() => onSetting()} style={{ position: 'absolute', end: 0, margin: 20, }}>
                         <Image style={{ width: 30, height: 30, }} source={require('../assets/image/setting.png')} />
                     </TouchableOpacity>
-                </View>
+                </View> */}
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
                 <TextInput
