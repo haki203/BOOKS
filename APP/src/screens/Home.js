@@ -43,6 +43,7 @@ const Home = (props) => {
     useEffect(() => {
         const getNews = async () => {
             const respone = await AxiosIntance().get("/product");
+            console.log(respone);
             setIsSearch(false);
             if (respone.result == true) {
                 console.log("---------------------------");
@@ -108,14 +109,14 @@ const Home = (props) => {
                     </Text>
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
                         <FlatList
-                            numColumns={2}
+
                             data={data}
                             renderItem={renderItemList}
                             keyExtractor={item => item._id}
                             showsVerticalScrollIndicator={false}
                         />
                     </View>
-                    <Text style={{ fontWeight: '500', fontSize: 20, color: textColor, marginLeft: 10, marginTop: 10, paddingBottom: 50 }}>
+                    {/* <Text style={{ fontWeight: '500', fontSize: 20, color: textColor, marginLeft: 10, marginTop: 10, paddingBottom: 50 }}>
                         Tất cả sách
                     </Text>
                     <SafeAreaView style={{ flexDirection: 'row', marginTop: -40 }}>
@@ -126,7 +127,7 @@ const Home = (props) => {
                             keyExtractor={item => item._id}
                             showsVerticalScrollIndicator={false}
                         />
-                    </SafeAreaView>
+                    </SafeAreaView> */}
                 </View>
             ) : (
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>

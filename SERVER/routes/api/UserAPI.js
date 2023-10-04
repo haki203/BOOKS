@@ -3,9 +3,26 @@ var router = express.Router();
 const userController = require('../../components/users/UserController');
 const validation = require('../../middle/Validation');
 const jwt = require('jsonwebtoken');
+const userModel = require('../../components/users/UserModel');
 const { authenApp } = require('../../middle/Authen');
 //api login
 // r
+// Kiểm tra email và trả về user hoặc tạo mới user
+router.get('/login-google/:email', async (req, res) => {
+    try {
+      const { email } = req.params;
+      // Kiểm tra xem email đã tồn tại trong MongoDB chưa
+      let user = await userModel.findOne({ email });
+      if (!user) {
+        // Nếu email chưa tồn tại, tạo mới user với email và các trường khác là null
+        user = await userModel.create({ email });
+      }
+      const token = jwt.sign({ user }, 'secret', { expiresIn: '1h' });
+      res.status(200).json({ result: true, user: user, token: token });
+    } catch (error) {
+      res.status(500).json({result:false, message: 'Internal Server Error' });
+    }
+  });
 router.post('/login', async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -13,19 +30,16 @@ router.post('/login', async (req, res, next) => {
         if (user) {
             // tao token
             const token = jwt.sign({ user }, 'secret', { expiresIn: '1h' });
-
             return res.status(200).json({ result: true, user: user, token: token });
         }
         else {
-            return res.status(400).json({ result: false, user: null });
+            return res.status(400).json({ result: false, message: "Invalid email or password." });
         }
-
     } catch (error) {
         console.log(error);
         res.status(400).json({ result: false });
     }
 });
-
 router.get('/logout', async (req, res, next) => {
     try {
         req.session.destroy;
@@ -55,7 +69,12 @@ router.post('/register', [validation.checkRegister], async (req, res, next) => {
             statusCode: 200,
             result,
         }
-        return res.status(200).json({ result: true, data });
+        if(result==true){
+            return res.status(200).json({ result: true, data });
+        }
+        else{
+            return res.status(401).json({ result: false, data });
+        }
     } catch (error) {
         console.log(error);
         //next error; Chi chay web

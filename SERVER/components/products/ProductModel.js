@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
+
 const schema = new Schema({
-    id: { type: ObjectId }, // khóa chính
-    name: {type: String}, // kiểu dữ liệu},
-    author:{type:String},
-    content:{type:String},
-    image:{type:String},
-    category:{type:ObjectId,ref:'category'},
-    detail:{type:ObjectId,ref:'detail'},
+    title: { type: String, required: true }, // Tiêu đề (bắt buộc phải có)
+    authorId: { type: ObjectId, ref: 'author' }, // Tham chiếu đến bảng Author thông qua khóa ngoại AuthorID
+    categoryId: { type: ObjectId, ref: 'category' }, // Tham chiếu đến bảng Category thông qua khóa ngoại CategoryID
+    description: { type: String },
+    image: { type: String },
+    audio: { type: String },
+    createAt: { type: String},
+    updateAt: { type: String },
 });
-module.exports = mongoose.models.product || mongoose.model('product', schema);
-// product -----> products
+// Đảm bảo rằng bảng Products chưa được định nghĩa trước đó
+module.exports = mongoose.model('book', schema, 'books');

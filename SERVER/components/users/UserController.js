@@ -19,7 +19,6 @@ const getAllUsers = async ()=>{
         throw error;
     }
 }
-
 const login = async (email,password)=>{
     return await userService.login(email,password);
 }

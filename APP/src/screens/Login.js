@@ -1,17 +1,18 @@
-import { StyleSheet, Text, View, Image, TextInput, FlatList, ScrollView, Dimensions, StatusBar, ActivityIndicator, Pressable, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
-import React, { useEffect } from 'react'
-import { useState, useContext } from 'react'
+import { StyleSheet, Text, View, Image, TextInput, FlatList, Keyboard, TouchableWithoutFeedback, ScrollView, Dimensions, StatusBar, ActivityIndicator, Pressable, TouchableOpacity, Alert, ToastAndroid } from 'react-native'
+import React, { useEffect, useState, useContext, useRef } from 'react'
 import { AppContext } from '../navigation/AppContext'
 import CheckBox from '@react-native-community/checkbox';
 import AxiosIntance from '../utils/AxiosIntance';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useDispatch, useSelector } from 'react-redux';
+//login gg
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 const windowsWidth = Dimensions.get('window').width;
 const windowsHeight = Dimensions.get('window').height;
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
+  const textInputRef = useRef(null);
   const { setIsLogin, setinfoUser } = useContext(AppContext)
   const [newPass, setnewPass] = useState(AppContext);
   const [password, setPassword] = useState("");
@@ -22,6 +23,16 @@ const Login = (props) => {
   const [savedAccounts, setSavedAccounts] = useState([]);
   const [filteredAccounts, setFilteredAccounts] = useState([]);
   const [isDropdown, setIsDropDown] = useState(true);
+  // login gg
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
+
+  GoogleSignin.configure({
+    webClientId: '506524912157-8m7letpekjspsgek4tpd5sfamp6c56it.apps.googleusercontent.com', // Thay bằng ID ứng dụng (Client ID) của bạn
+    offlineAccess: true, // Cấp quyền truy cập offline để nhận access token
+    forceCodeForRefreshToken: true, // Yêu cầu mã mới khi cần lấy refresh token
+  });
+
   // hide pass
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
@@ -47,54 +58,50 @@ const Login = (props) => {
     );
   }
 
-// Lưu tài khoản (email và password) vào AsyncStorage
-const SAVE_ACCOUNT_KEY = "save-account";
-const saveAccount = async (email, password) => {
-  try {
-    const existingAccountsJson = await AsyncStorage.getItem(SAVE_ACCOUNT_KEY);
-    const accounts = existingAccountsJson != null ? JSON.parse(existingAccountsJson) : {};
-    
-    if (accounts[email] && accounts[email] === password) {
-      console.log(`Tài khoản với email ${email} đã tồn tại`);
-      return;
-    } else {
-      console.log(`Cập nhật tài khoản với email ${email}`);
+  // Lưu tài khoản (email và password) vào AsyncStorage
+  const SAVE_ACCOUNT_KEY = "save-account";
+  const saveAccount = async (email, password) => {
+    try {
+      const existingAccountsJson = await AsyncStorage.getItem(SAVE_ACCOUNT_KEY);
+      const accounts = existingAccountsJson != null ? JSON.parse(existingAccountsJson) : {};
+
+      if (accounts[email] && accounts[email] === password) {
+        console.log(`Tài khoản với email ${email} đã tồn tại`);
+        return;
+      } else {
+        console.log(`Cập nhật tài khoản với email ${email}`);
+      }
+
+      accounts[email] = password;
+      await AsyncStorage.setItem(SAVE_ACCOUNT_KEY, JSON.stringify(accounts));
+      console.log(`Tài khoản ${email} đã được lưu vào AsyncStorage`);
+    } catch (error) {
+      console.log('Lỗi khi lưu tài khoản vào AsyncStorage:', error);
     }
-    
-    accounts[email] = password;
-    await AsyncStorage.setItem(SAVE_ACCOUNT_KEY, JSON.stringify(accounts));
-    console.log(`Tài khoản ${email} đã được lưu vào AsyncStorage`);
-  } catch (error) {
-    console.log('Lỗi khi lưu tài khoản vào AsyncStorage:', error);
-  }
-};
+  };
 
 
 
-// Lấy mật khẩu của tài khoản từ AsyncStorage
-const getSavedAccounts = async () => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    const accounts = await AsyncStorage.multiGet(keys);
-
-    // Tìm giá trị tương ứng với khóa "save-account"
-    const saveAccountItem = accounts.find(item => item[0] === 'save-account');
-
-    if (saveAccountItem) {
-      // Nếu tìm thấy giá trị "save-account", phân tích chuỗi JSON để lấy ra đối tượng tài khoản
-      const saveAccountValue = saveAccountItem[1];
-      const parsedAccounts = JSON.parse(saveAccountValue);
-
-      // Tiến hành làm việc với đối tượng tài khoản (parsedAccounts) ở đây
-      console.log(parsedAccounts);
-      setSavedAccounts(parsedAccounts);
-    } else {
-      console.log('Không tìm thấy giá trị "save-account" trong AsyncStorage');
+  // Lấy mật khẩu của tài khoản từ AsyncStorage
+  const getSavedAccounts = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const accounts = await AsyncStorage.multiGet(keys);
+      // Tìm giá trị tương ứng với khóa "save-account"
+      const saveAccountItem = accounts.find(item => item[0] === 'save-account');
+      if (saveAccountItem) {
+        // Nếu tìm thấy giá trị "save-account", phân tích chuỗi JSON để lấy ra đối tượng tài khoản
+        const saveAccountValue = saveAccountItem[1];
+        const parsedAccounts = JSON.parse(saveAccountValue);
+        // Tiến hành làm việc với đối tượng tài khoản (parsedAccounts) ở đây
+        setSavedAccounts(parsedAccounts);
+      } else {
+        console.log('Không tìm thấy giá trị "save-account" trong AsyncStorage');
+      }
+    } catch (error) {
+      console.log('Lỗi khi lấy danh sách tài khoản từ AsyncStorage:', error);
     }
-  } catch (error) {
-    console.log('Lỗi khi lấy danh sách tài khoản từ AsyncStorage:', error);
-  }
-};
+  };
 
   useEffect(() => {
     getSavedAccounts();
@@ -111,7 +118,7 @@ const getSavedAccounts = async () => {
         });
         setFilteredAccounts(filteredAccounts);
       }
-      else{
+      else {
         setFilteredAccounts([])
         return [];
 
@@ -120,7 +127,7 @@ const getSavedAccounts = async () => {
       console.log(error);
     }
   };
-  
+
 
   // Gọi hàm filterSavedAccounts khi thay đổi nội dung của TextInput
   const handleChangeText = (text) => {
@@ -128,6 +135,36 @@ const getSavedAccounts = async () => {
     setIsDropDown(true)
     filterSavedAccounts(text);
   };
+  ////////////////////////////Login gg
+  const handleGoogleLogin = async () => {
+    try {
+      // Kiểm tra xem người dùng đã đăng nhập với Google trước đó hay chưa
+      const isSignedIn = await GoogleSignin.isSignedIn();
+      if (!isSignedIn) {
+        // Nếu chưa đăng nhập, thực hiện đăng nhập
+        await GoogleSignin.signIn();
+        // Lấy thông tin người dùng và access token
+        const user = await GoogleSignin.getCurrentUser();
+        const accessToken = await GoogleSignin.getTokens();
+        // Lưu thông tin người dùng vào Redux Store
+        console.log(user);
+        console.log(accessToken);
+        dispatch(loginSuccess({ user, accessToken }));
+      }
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // Người dùng hủy đăng nhập
+        console.log('Người dùng hủy đăng nhập');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // Quá trình đăng nhập đang diễn ra
+        console.log('Quá trình đăng nhập đang diễn ra');
+      } else {
+        // Lỗi đăng nhập
+        console.log('Lỗi đăng nhập', error);
+        console.log('Lỗi', error.code);
+      }
+    }
+  }
 
   const onClick = async () => {
     if (email.length <= 0) {
@@ -171,7 +208,10 @@ const getSavedAccounts = async () => {
       }
     }
   }
-
+  const handlePress = () => {
+    Keyboard.dismiss();
+    textInputRef.current.blur();
+  };
 
   const onRegister = () => {
     navigation.navigate('Register')
@@ -180,7 +220,7 @@ const getSavedAccounts = async () => {
     navigation.navigate('ForgetPass')
   }
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={handlePress} style={styles.container}>
       {
         isLoading == true ? (
           <View style={styles.loadingContainer}>
@@ -192,7 +232,7 @@ const getSavedAccounts = async () => {
             <StatusBar barStyle="dark-content" hidden={false} backgroundColor='white' translucent={true} />
             <Image style={styles.loginImage} source={require('../assets/image/Group.png')} />
             <View>
-              <TextInput value={email} onChangeText={handleChangeText} style={styles.textInput} placeholder='Email' />
+              <TextInput ref={textInputRef} value={email} onChangeText={handleChangeText} style={styles.textInput} placeholder='Email' />
               {
                 isDropdown == true && (
                   <View>
@@ -220,7 +260,7 @@ const getSavedAccounts = async () => {
             </View>
 
             <View style={styles.passwordContainer}>
-              <TextInput value={password} secureTextEntry={!isPasswordVisible} style={styles.textInput} placeholder='Mật khẩu' onChangeText={setPassword} />
+              <TextInput ref={textInputRef} value={password} secureTextEntry={!isPasswordVisible} style={styles.textInput} placeholder='Mật khẩu' onChangeText={setPassword} />
               <TouchableOpacity onPress={togglePasswordVisibility} style={styles.hideButton}>
                 {isPasswordVisible ?
                   <Image style={styles.hideImage} source={require('../assets/image/hide.png')} />
@@ -250,9 +290,11 @@ const getSavedAccounts = async () => {
             </TouchableOpacity>
 
             <Text style={styles.orSigninWith}>- Hoặc tiếp tục bằng -</Text>
-
+            
             <View style={styles.socialIconsContainer}>
+              <TouchableOpacity onPress={handleGoogleLogin}>
               <Image style={styles.socialIcon} source={require('../assets/image/Google.png')} />
+              </TouchableOpacity>
               <Image style={styles.socialIcon} source={require('../assets/image/Facebook.png')} />
             </View>
 
@@ -265,7 +307,7 @@ const getSavedAccounts = async () => {
           </View>
         )
       }
-    </View>
+    </TouchableWithoutFeedback >
   )
 }
 
@@ -277,11 +319,13 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     marginTop: '100%',
+    justifyContent: 'center'
   },
   loadingText: {
     color: 'black',
     fontSize: 18,
     fontWeight: '700',
+    textAlign: 'center'
   },
   mainContainer: {
     flex: 1,
@@ -289,15 +333,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   loginImage: {
-    width: windowsWidth / 1.5,
-    height: 210,
-    marginTop: '30%',
+    width: windowsWidth * 0.6,
+    height: windowsHeight * 0.27,
+    marginTop: windowsHeight * 0.15,
+    marginBottom: windowsHeight * 0.02
   },
   textInput: {
     width: windowsWidth - 100,
+    height: windowsHeight * 0.075,
     borderWidth: 1,
     borderRadius: 18,
-    marginTop: 15,
+    marginTop: 20,
     paddingLeft: 18,
     fontSize: 15,
   },
@@ -308,7 +354,7 @@ const styles = StyleSheet.create({
   hideButton: {
     position: 'absolute',
     right: 0,
-    top: '40%',
+    top: '45%',
     marginRight: 10,
   },
   hideImage: {
@@ -319,7 +365,8 @@ const styles = StyleSheet.create({
   checkBoxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 10,
+    marginBottom: 10,
     width: windowsWidth - 100,
     justifyContent: 'space-between',
   },

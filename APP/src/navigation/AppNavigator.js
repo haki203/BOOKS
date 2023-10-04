@@ -18,6 +18,8 @@ import OTPValidate from '../screens/OTPValidate';
 import Privacy from '../screens/Privacy';
 import ChangeProfile from '../screens/ChangeProfile';
 import Setting from '../screens/Setting';
+import Author from '../screens/Author';
+import Category from '../screens/Category';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +43,8 @@ const Mains = () => {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name='HomeDetails' component={HomeDetails} />
       <Stack.Screen name='ChangePass' component={ChangePass} />
+      <Stack.Screen name='Author' component={Author} />
+      <Stack.Screen name='Category' component={Category} />
       <Stack.Screen name="Book" component={Book} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Privacy" component={Privacy} />

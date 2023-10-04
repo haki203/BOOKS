@@ -7,16 +7,15 @@ import { Dropdown } from 'react-native-element-dropdown';
 const windowsWidth = Dimensions.get('window').width;
 const windowsHeight = Dimensions.get('window').height;
 const ItemDetails = (props) => {
+    //useNavigation 
     const { navigation } = props;
     const { route } = props;
     const { params } = route;
-    const [name, setname] = useState("");
     const [category, setcategory] = useState("");
     const [page, setpage] = useState(1);
     const [author, setauthor] = useState("");
     const [content, setcontent] = useState("");
-    const [detail, setdetail] = useState("");
-    const [image, setimage] = useState("");
+    const [product, setProduct] = useState("");
     const [isLoading, setisLoading] = useState(false);
     const scrollRef = useRef();
     const data = [
@@ -25,7 +24,9 @@ const ItemDetails = (props) => {
         { label: 'Chương 2', value: '3' },
         { label: 'Chương 3', value: '4' },
     ];
-
+    const onAuthor =(idAuthor)=>{
+        navigation.navigation("Author",{idAuthor})
+    }
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
@@ -61,21 +62,46 @@ const ItemDetails = (props) => {
             animated: true,
         });
     }
+
     useEffect(() => {
-        setisLoading(true)
         const getDetail = async () => {
 
-            const response = await AxiosIntance().get("/product/" + params.id);
-            if (response.result == true) {
-                setname(response.product.name);
-                setimage(response.product.image);
-                setauthor(response.product.author);
-                setdetail(response.product.detail);
-                setcontent(response.product.content);
-                setcategory(response.product.category.name);
-                setisLoading(false);
+            const response = await AxiosIntance().get("product?id=" + params.id);
+            if (response.result == true) {    
+                setcontent(response.product[0].description);
+                setProduct(response.product[0]);
+
+                // get author
+                try {
+                    const res = await AxiosIntance().get("/product/author/" + response.product[0].authorId);
+                    console.log("tac gia ne: ",res);
+                    if(res.result){
+                        setauthor(res.author.name);
+                        console.log("lay author thanh cong");
+                    }
+                    else{
+                        console.log("result: ",res.result);
+                        return null;
+                    }
+                } catch (error) {
+                }
+                // get category
+                try {
+                    const res = await AxiosIntance().get("/product/category/" + response.product[0].categoryId);
+                    console.log("category ne: ",res);
+                    if(res.result){
+                        setcategory(res.category.name);
+                        console.log("lay category thanh cong");
+                        setisLoading(false);
+                    }
+                    else{
+                        console.log("result: ",res.result);
+                    }
+                } catch (error) {
+                }
             }
         }
+        setisLoading(true);
         getDetail();
 
         return () => {
@@ -138,7 +164,7 @@ const ItemDetails = (props) => {
                                 {
                                     page == 1 ?
                                         <View style={{ width: '100%', height: windowsHeight / 2.35, }}>
-                                            <TopComponent name={name} author={author} category={category} image={image} />
+                                            <TopComponent  author={author} category={category} navigation={navigation}  product={product} />
                                         </View> :
                                         <View></View>
                                 }
@@ -206,23 +232,29 @@ const DropdownComponent = ({ data, value, setpage, isFocus, setIsFocus, setValue
         </View>
     )
 }
-const TopComponent = ({ name, author, category, image }) => {
+const TopComponent = ({ author,navigation, category,product }) => {
+    const onAuthor =()=>{
+        navigation.navigate("Author",{product:product});
+    }
+    const onCategory=()=>{
+        navigation.navigate("Category",{categoryId:product.categoryId,category:category});
+    }
     return (
         <View style={{ justifyContent: 'center', alignItems: 'center', }}>
-            <Text style={{ fontSize: 23, fontWeight: 'bold', color: '#000000' }}>{name}</Text>
+            <Text style={{ fontSize: 23, fontWeight: 'bold', color: '#000000' }}>{product.title}</Text>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 8, flexDirection: 'row' }}>
                 <Text style={{ fontSize: 15, width: 55 }}>Tác giả:</Text>
-                <TouchableOpacity style={{}}>
+                <TouchableOpacity onPress={onAuthor}  style={{}}>
                     <Text style={{ fontWeight: 'bold', fontSize: 15, }}>{author}</Text>
                 </TouchableOpacity>
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 8, flexDirection: 'row' }}>
                 <Text style={{ fontSize: 14.4, width: 62 }}>Thể loại:</Text>
-                <TouchableOpacity style={{}}>
+                <TouchableOpacity onPress={onCategory} style={{}}>
                     <Text style={{ fontWeight: 'bold', fontSize: 15, }}>{category}</Text>
                 </TouchableOpacity>
             </View>
-            <Image style={{ width: 160, height: 220, borderRadius: 15, margin: 10 }} source={{ uri: image }} ></Image>
+            <Image style={{ width: 160, height: 220, borderRadius: 15, margin: 10 }} source={{ uri: product.image }} ></Image>
         </View>
     )
 }

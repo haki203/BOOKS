@@ -9,5 +9,5 @@ const schema = new Schema({
     role:{type:Number,default:1,},
     // 1:user , 100:admin , 1000: super admin system
 });
-module.exports = mongoose.models.user || mongoose.model('user', schema);
+module.exports = mongoose.models.user || mongoose.model('users', schema);
 // user -----> users

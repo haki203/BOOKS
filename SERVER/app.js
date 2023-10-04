@@ -14,6 +14,7 @@ const productApiRouter = require('./routes/api/ProductAPI');
 const userApiRouter = require('./routes/api/UserAPI');
 const productCpanelRouter = require('./routes/cpanel/ProductCPanel');
 const userCpanelRouter = require('./routes/cpanel/UserCpanel');
+const ProductModel = require('./components/products/ProductModel');
 
 const firebaseConfig = {
   apiKey: "AIzaSyAyhWnSyHSvXHnKEGzUemayimWlpLQfo7I",
@@ -40,8 +41,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false }
 }));
-
-mongoose.connect('mongodb+srv://thontps24351:Nguyentruongtho19@clusterbook.hr7lyso.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://tho387vm:Nguyentruongtho19@booksapp.evsvrm3.mongodb.net/booksdb', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })

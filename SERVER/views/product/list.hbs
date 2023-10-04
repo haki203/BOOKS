@@ -270,23 +270,56 @@
                                     <th scope="col">Name</th>
                                     <th scope="col">Author</th>
                                     <th scope="col">Content</th>
-                                    <th scope="col">Price</th>
                                     <th scope="col">Image</th>
                                     <th scope="col">Category</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
+                            <style>
+                                .limited-lines {
+                                    max-width: 400px;
+                                    width: 400px;
+                                    overflow: hidden;
+                                    white-space: nowrap;
+                                    /* Ngăn ngắt dòng trong nội dung */
+                                    text-overflow: ellipsis;
+                                    white-space: normal;
+                                    max-height: 7em;
+                                    /* Hiển thị dấu ba chấm khi nội dung bị cắt */
+                                }
+
+                                table {
+                                    border-collapse: collapse;
+                                    /* Kết hợp các đường viền để tạo viền mảng hơn */
+                                    width: 100%;
+                                    height: 100%;
+                                    /* Đảm bảo bảng chiếm đủ chiều rộng của container */
+                                }
+
+                                th,
+                                td {
+                                    border: 1px solid black;
+                                    /* Đặt đường viền 1px và màu đen cho các ô */
+                                    padding: 8px;
+                                    /* Tạo khoảng cách giữa nội dung và đường viền */
+                                    text-align: left;
+                                    /* Căn lề nội dung trong ô */
+                                }
+                                tbody{
+                                    height: 300px;
+                                    max-height: 350px;
+                                }
+                            </style>
                             <tbody>
                                 {{#each products}}
                                 <tr>
-                                    <td>{{this.name}}</td>
-                                    <td>{{this.author}}</td>
-                                    <td>{{this.content}}</td>
-                                    <td>{{this.price}}</td>
+                                    <td>{{this.title}}</td>
+                                    <td>{{this.authorId}}</td>
+                                    <td class="limited-lines">{{this.description}}</td>
                                     <td>
-                                        <img style="width: 80px;height: 50px;" src="{{this.image}}">
+                                        <img style="width: 80px; height: 120px;" src="{{this.image}}">
                                     </td>
-                                    <td>{{this.category.name}}</td>
+                                    <td>{{this.categoryId}}</td>
                                     <td>
                                         <a href="/cpanel/product/{{this._id}}/edit" class="btn btn-primary">Edit</a>
                                         <a onclick="confirmDelete('{{this._id}}');" class="btn btn-danger">Delete</a>
@@ -294,11 +327,10 @@
                                 </tr>
                                 {{/each}}
                             </tbody>
+                            <!-- End Default Table Example -->
                         </table>
-                        <!-- End Default Table Example -->
                     </div>
                 </div>
-
 
             </div>
             <div class="col-lg-2"></div>

@@ -1,14 +1,21 @@
 const productModel = require('./ProductModel');
+const chapterModel = require('./ChapterModel');
 const detailModel = require('../detail/DetailModel');
 const getAllProducts = async (size, page) => {
     // lay toan bo sp trong database
     // size =20 , page =4 ==> 61-80
     try {
-        return await productModel.find().populate('category').populate('detail')
+        const books = await productModel.find({});
+
+
+        return  books ;
+
     } catch (error) {
         console.log("getAllProducts error: " + error);
+        throw error;
+        return [];
     }
-    return [];
+
 }
 const getAllDetails = async (size, page) => {
     // lay toan bo sp trong database
@@ -33,10 +40,10 @@ const deleteProductById = async (id) => {
     return false;
 
 }
-const addNewProduct = async (name,author,content,image,category,detail) => {
+const addNewProduct = async (title,authorId,categoryId, description, image,createAt,updateAt ) => {
     try {
         const newProduct = {
-            name,author,content,image,category,detail
+            title,authorId,categoryId, description, image,createAt,updateAt 
         }
         await productModel.create(newProduct);
         return true;
@@ -49,7 +56,7 @@ const addNewProduct = async (name,author,content,image,category,detail) => {
 
 }
 //update sp
-const updateProduct = async (id, name,author,content,price,image,category) => {
+const updateProduct = async (id, name, author, content, price, image, category) => {
     try {
         let item = await productModel.findById(id);
         if (item) {
@@ -75,23 +82,23 @@ const getProductById = async (id) => {
         let product = await productModel.findById(id).populate('category').populate('detail') // lay category;;
         return product;
     } catch (error) {
-        console.log('getProductById error', error); 
+        console.log('getProductById error', error);
     }
     return null;
 }
-const search = async(keyword)=>{
+const search = async (keyword) => {
     try {
         let query = {
             //price:{$gt:1000,$lt:2000}, // gt:greater than, lt: less than  1000<price<2000
             //quantity:{$lte:334},
             //$or:[{quantity:{$lte:500},quantity:{$gt:100},}],
-            name:{$regex:keyword,$options:'i'}, // ten sp ko phan biet chu hoa, chi can co ky tu do la dc
+            name: { $regex: keyword, $options: 'i' }, // ten sp ko phan biet chu hoa, chi can co ky tu do la dc
             //name:keyword,  // tim kiem theo dung ten moi ra
         }
         let product = await productModel.find(query);
         return product;
     } catch (error) {
-        console.log('search error', error); 
+        console.log('search error', error);
     }
 }
-module.exports = { getAllProducts, deleteProductById, addNewProduct, updateProduct, getProductById ,search,getAllDetails};
+module.exports = { getAllProducts, deleteProductById, addNewProduct, updateProduct, getProductById, search, getAllDetails };

@@ -13,6 +13,7 @@ const { v4: uuidv4 } = require('uuid');
 const uuid = uuidv4();
 // change the path of json file
 const serviceAccount = require('../../bookapp-f06b4-firebase-adminsdk-45n3b-c2b1712615.json');
+const authorModel = require('../../components/author/AuthorModel');
 //intialize
 const admin = firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(serviceAccount),
@@ -66,47 +67,42 @@ router.get('/:id/delete', async (req, res, next) => {
     }
 
 });
-// router.get('/new', async (req, res, next) => {
-//     // hien thi add sp
-//     const categories = await categoryController.getAllCategories();
-//     res.render('product/new', { categories });
-
-// });
-// // xu ly add sp
-// router.post('/new', [uploadFile.single('image'),], async (req, res, next) => {
-//     try {
-//         let { body, file } = req;
-//         if (file) {
-//             // up image and get link image
-//             let image = `http://${CONFIG.CONSTANTS.IP}:3000/images/${file.filename}`;
-//             body = { ...body, image: image }
-//         }
-//         let { name, price, quantity, image, category } = body;
-//         await productController
-//             .addNewProduct(name, price, quantity, image, category);
-//         return res.redirect('/cpanel/product');
-//     } catch (error) {
-//         console.log('Add new product error: ', error)
-//         next(error);
-//     }
-// })
-router.get('/testUploadImage', async (req, res, next) => {
+router.get('/new', async (req, res, next) => {
     // hien thi add sp
     const categories = await categoryController.getAllCategories();
     res.render('product/new', { categories });
 
 });
+// xu ly add sp
+router.post('/new', [uploadFile.single('image'),], async (req, res, next) => {
+    try {
+        let { body, file } = req;
+        if (file) {
+            // up image and get link image
+            let image = `http://${CONFIG.CONSTANTS.IP}:3000/images/${file.filename}`;
+            body = { ...body, image: image }
+        }
+        let { name, price, quantity, image, category } = body;
+        await productController
+            .addNewProduct(name, price, quantity, image, category);
+        return res.redirect('/cpanel/product');
+    } catch (error) {
+        console.log('Add new product error: ', error)
+        next(error);
+    }
+})
+router.get('/testUploadImage', async (req, res, next) => {
+    // hien thi add sp
+    const categories = await categoryController.getAllCategories();
+    const authors = await authorModel.find();
+    res.render('product/new', { categories,authors });
+
+});
 router.post('/testUploadImage', [uploadFile.single('image'),], async (req, res, next) => {
     try {
-        let image;
         let { body, file } = req;
-        
-        (async () => {
-            image = await uploadFiles(file.path, file.filename);
-            console.log(" link Hinh ne:",image);
-        })();
-        let { name,author,content, price, category } = body;
-        await productController.addNewProduct(name,author,content, price, image, category);
+        let { title,authorId,categoryId, description,image,createAt,updateAt } = body;
+        await productController.addNewProduct(title,authorId,categoryId, description, image,createAt,updateAt );
         return res.redirect('/cpanel/product');
     } catch (error) {
         console.log('Add new product error: ', error)

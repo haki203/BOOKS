@@ -25,9 +25,9 @@ const deleteProductById =async(id)=>{
         throw error;
     }
 }
-const addNewProduct =async(name,author,content,image,category,detail)=>{
+const addNewProduct =async(title,authorId,categoryId, description, image,createAt,updateAt )=>{
     try{
-        return await productService.addNewProduct(name,author,content,image,category,detail);
+        return await productService.addNewProduct(title,authorId,categoryId, description, image,createAt,updateAt );
     }
     catch(error){
         console.log("error addNewProduct: "+error);

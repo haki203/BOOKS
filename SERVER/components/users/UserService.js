@@ -4,8 +4,11 @@ const login = async (email, password) => {
     try {
         let user = await userModel.findOne({ email: email });
         if (user) {
+            console.log(password);
+            console.log(user.password);
             let check = bcrypt.compareSync(password, user.password);
             return check ? user : false;
+
         }
     } catch (error) {
         console.log("Login error: ", error);

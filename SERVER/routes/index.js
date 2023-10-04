@@ -29,7 +29,7 @@ router.post('/login', [auth.authenweb], async function (req, res, next) {
   const { email, password } = req.body;
   const result = await userController.login(email, password);
   //luu tt vao token
-
+  console.log(result);
   if (result) {
     const token = jwt.sign({ _id: result._id,role:result.role }, 'secret');
     req.session.token = token;

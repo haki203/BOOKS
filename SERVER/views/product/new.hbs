@@ -198,11 +198,7 @@
 
     <!-- ======= Sidebar ======= -->
     <aside id="sidebar" class="sidebar">
-
         <ul class="sidebar-nav" id="sidebar-nav">
-
-
-
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-journal-text"></i><span>Product</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -272,35 +268,50 @@
                             Depending on your browser and OS, you’ll see a slightly different style of feedback.</p>
 
                         <!-- Browser Default Validation -->
-                        <form class="row g-3" method="post" action="/cpanel/product/testUploadImage" enctype="multipart/form-data">
+                        <form class="row g-3" method="post" action="/cpanel/product/testUploadImage"
+                            enctype="multipart/form-data">
                             <div class="col-md-12">
-                                <label for="validationDefault01" class="form-label">Name</label>
-                                <input type="text" name="name" class="form-control" id="validationDefault01" value="" required>
-                            </div>
-                                                        <div class="col-md-12">
-                                <label for="validationDefault01" class="form-label">Author</label>
-                                <input type="text" name="author" class="form-control" id="validationDefault01" value="" required>
-                            </div>
-                                                              <div class="col-md-12">
-                                <label for="validationDefault01" class="form-label">Content</label>
-                                <input type="text" name="content" class="form-control" id="validationDefault01" value="" required>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="validationDefault02" class="form-label">Price</label>
-                                <input type="number" name="price" class="form-control" id="validationDefault02" value="Doe" required>
-                            </div>
-                            <div class="col-md-12">
-                                <label for="validationDefault03" class="form-label">Image</label>
-                                <input type="file" name="image" class="form-control" id="validationDefault03" required>
+                                <label for="validationDefault01" class="form-label">title</label>
+                                <input type="text" name="title" class="form-control" id="validationDefault01" value=""
+                                    required>
                             </div>
                             <div class="col-12">
                                 <label for="validationDefault03" class="form-label">Cagetory</label>
-                                <select class="form-select" name="category" aria-label="Default select example">
+                                <select class="form-select" name="categoryId" aria-label="Default select example">
                                     {{#each categories}}
-                                    <option value="{{this._id}}">{{this.name}}</option> 
+                                    <option value="{{this._id}}">{{this.name}}</option>
                                     {{/each}}
                                 </select>
                             </div>
+                            <div class="col-12">
+                                <label for="validationDefault03" class="form-label">Author</label>
+                                <select class="form-select" name="authorId" aria-label="Default select example">
+                                    {{#each authors}}
+                                    <option value="{{this._id}}">{{this.name}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationDefault01" class="form-label">Description</label>
+                                <input type="text" name="description" class="form-control" id="validationDefault01"
+                                    value="" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationDefault02" class="form-label">CreateAt</label>
+                                <input name="createAt" class="form-control" 
+                                    >
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationDefault02" class="form-label">UpdateAt</label>
+                                <input name="updateAt" class="form-control" 
+                                    >
+                            </div>
+                            <div class="col-md-12">
+                                <label for="validationDefault03" class="form-label">Image</label>
+                                <input type="updateAt" name="image" class="form-control" id="validationDefault03"
+                                    required>
+                            </div>
+
                             <div class="col-12">
                                 <button class="btn btn-primary" type="submit">Submit form</button>
                             </div>
@@ -335,5 +346,3 @@
 </body>
 
 </html>
-
-
